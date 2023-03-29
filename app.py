@@ -37,10 +37,17 @@ class Dashboard(tk.Frame):
        
 class MainScreen(tk.Toplevel):
     fileName = None
+
+    
     def __init__(self, master = None):
         super().__init__(master)
         self.master.withdraw()
         self.geometry("1300x600")
+        
+        def disable_event():
+            pass    
+        
+        self.protocol("WM_DELETE_WINDOW", disable_event)
         file = tk.Label(self, text="File Name: ", font=("Arial", 10))
         file.grid(row=0, column=0, padx=30, pady=10)
 
@@ -109,8 +116,9 @@ class MainScreen(tk.Toplevel):
 
         # Scaler test_size
         test_size_sc = tk.Scale( self,from_=0.01, to=1.00, digits = 3, resolution = 0.01,
-           orient = tk.HORIZONTAL) 
+           orient = tk.HORIZONTAL, length = 180, width = 15, sliderlength = 20) 
         test_size_sc.grid(row=3, column=3, padx=20, pady=10)
+        test_size_sc.set(0.05)
 
         # Label random_state
         label_random_state = tk.Label(self, text="Random State:", font=("Arial", 10))
@@ -132,7 +140,13 @@ class MainScreen(tk.Toplevel):
         # Button Accuracy
         btn_accuracy = tk.Button(self, text="Accuracy", font=("Arial", 10), bg="blue", fg='#ffffff', width = 15, command=lambda: self.accuracy(test_size_sc.get(), random_state.get()))
         btn_accuracy.grid(row=5, column=2, padx=20, pady=10)
-        
+
+        # Button Close
+        btn_close = tk.Button(self, text="Close", font=("Arial", 10), bg="red", fg='#ffffff', width = 15, command=lambda: self.master.destroy())
+        btn_close.grid(row=5, column=1, padx=20, pady=10)
+
+        self.mainloop()
+
 
     # Menghitung nilai akurasi
     def accuracy(self,test_size_sc, random_state):
@@ -145,6 +159,8 @@ class MainScreen(tk.Toplevel):
             df = pd.read_csv(get_file_name())
         elif file_name.endswith('.xlsx'):
             df = pd.read_excel(get_file_name())
+
+        df = df.dropna()
 
 
         # make sure the data type are integer
@@ -185,6 +201,8 @@ class MainScreen(tk.Toplevel):
             df = pd.read_csv(get_file_name())
         elif file_name.endswith('.xlsx'):
             df = pd.read_excel(get_file_name())
+
+        df = df.dropna()
         
         rs = int(random_state)
         X_train, X_test, y_train, y_test = train_test_split(df.iloc[:, :-1], df.iloc[:, -1], test_size=test_size, random_state=rs)
@@ -215,6 +233,9 @@ class MainScreen(tk.Toplevel):
             df = pd.read_csv(get_file_name())
         elif file_name.endswith('.xlsx'):
             df = pd.read_excel(get_file_name())
+
+        # clean the data
+        df = df.dropna()
 
         rs = int(random_state)
         X_train, X_test, y_train, y_test = train_test_split(df.iloc[:, :-1], df.iloc[:, -1], test_size=test_size, random_state=rs)
